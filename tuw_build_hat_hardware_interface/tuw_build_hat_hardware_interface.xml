@@ -1,0 +1,9 @@
+<library path="tuw_build_hat_hardware_interface">
+    <class name="tuw_build_hat_hardware_interface/BuildHatHardwareInterface"
+           type="tuw_build_hat_hardware_interface::BuildHatHardwareInterface"
+           base_class_type="hardware_interface::SystemInterface">
+           <discription>
+            Hardware interface for a Build HAT with two motors
+           </discription>
+    </class>
+</library>

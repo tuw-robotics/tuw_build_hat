@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    
+
+    <ros2_control name="MobileBase" type="system">
+        <hardware>
+            <!-- <plugin>mock_components/GenericSystem</plugin>
+            <param name="calculate_dynamics">true</param> -->
+            <plugin>tuw_build_hat_hardware_interface/BuildHatHardwareInterface</plugin>
+            <param name="serial_pdort">/dev/ttyUSB0</param>
+            <param name="port_motor_left">0</param>
+            <param name="port_motor_right">1</param>
+            <param name="msgs_loglevel">0</param>
+            <param name="filename_serial_log">/tmp/build_hat_serial.log</param>
+            <param name="filename_msgs_log">/tmp/build_hat_msg.log</param>
+        </hardware>
+        <joint name="base_right_wheel_joint">
+            <command_interface name="velocity" />
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+        </joint>        
+        <joint name="base_left_wheel_joint">
+            <command_interface name="velocity" />
+            <state_interface name="position" />
+            <state_interface name="velocity" />
+        </joint>        
+    </ros2_control>
+
+</robot>
