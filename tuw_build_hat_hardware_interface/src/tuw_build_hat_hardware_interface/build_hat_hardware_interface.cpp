@@ -15,8 +15,8 @@ hardware_interface::CallbackReturn BuildHatHardwareInterface::on_init(const hard
         RCLCPP_ERROR(get_logger(), "Not both joints specified");
         return CallbackReturn::ERROR;
     }
-    std::string joint_left = params.hardware_info.joints[0].name;
-    std::string joint_right = params.hardware_info.joints[1].name;
+    std::string joint_right = params.hardware_info.joints[0].name;
+    std::string joint_left = params.hardware_info.joints[1].name;
     RCLCPP_INFO(get_logger(), "Left joint name: %s", joint_left.c_str());
     RCLCPP_INFO(get_logger(), "Right joint name: %s", joint_right.c_str());
 
@@ -71,6 +71,19 @@ hardware_interface::CallbackReturn BuildHatHardwareInterface::on_init(const hard
     }
     RCLCPP_INFO(get_logger(), "Serial Log to: %s", (filename_serial_log_.empty() ? "std::cout" : filename_serial_log_.c_str()));
 
+    kp_ = 0.003, ki_ = 0.01, kd_ = 0.0;
+    if (info_.hardware_parameters.count("kp")) {
+        kp_ = std::stod(info_.hardware_parameters["kp"]);
+    }
+    if (info_.hardware_parameters.count("ki")) {
+        ki_ = std::stod(info_.hardware_parameters["ki"]);
+    }
+    if (info_.hardware_parameters.count("kd")) {
+        kd_ = std::stod(info_.hardware_parameters["kd"]);
+    }
+    RCLCPP_INFO(get_logger(), "PID Parameters are: %4.3lf, %4.3lf, %4.3lf", kp_, ki_, kd_);
+
+
     filename_firmware_ = (std::filesystem::path(firmware_directory) / FIRMWARE_FILENAME).string();
     filename_signature_ = (std::filesystem::path(firmware_directory) / SIGNATURE_FILENAME).string();
     RCLCPP_INFO(get_logger(), "Build Firmware: %s", filename_firmware_.c_str());
@@ -113,17 +126,17 @@ hardware_interface::CallbackReturn BuildHatHardwareInterface::on_deactivate(cons
 }
 
 hardware_interface::return_type BuildHatHardwareInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
-    set_state(shm_velocity_left_, motor_left_->get_velocity_radian_per_sec());
+    set_state(shm_velocity_left_, -motor_left_->get_velocity_radian_per_sec());
     set_state(shm_velocity_right_, motor_right_->get_velocity_radian_per_sec());
-    set_state(shm_position_left_, motor_left_->get_position_cumulative_radian());
+    set_state(shm_position_left_, -motor_left_->get_position_cumulative_radian());
     set_state(shm_position_right_, motor_right_->get_position_cumulative_radian());
     return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type BuildHatHardwareInterface::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
-
-    motor_left_->set_target_radian_per_sec(get_command(shm_velocity_left_));
-    motor_right_->set_target_radian_per_sec(get_command(shm_velocity_right_));
+    
+    motor_left_->set_target_radian_per_sec(-get_command(shm_velocity_left_), kp_, ki_, kd_);
+    motor_right_->set_target_radian_per_sec(get_command(shm_velocity_right_), kp_, ki_, kd_);
     build_hat_->commit();
     return hardware_interface::return_type::OK;
 }

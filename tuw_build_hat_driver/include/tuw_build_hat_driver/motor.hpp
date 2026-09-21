@@ -109,6 +109,7 @@ class Motor : public Device {
     void deactivate() override;
 
   private:
+    long cumulative_deg_offset_;
     double speed_target_;   ///< target speed, last requested via set_target_radian_per_sec() [rad/s]
     double speed_current_;  ///< current speed, as decoded from feedback [rad/s]
     double cumulative_rad_; ///< cumulative (unwrapped) position, as decoded from feedback [rad]

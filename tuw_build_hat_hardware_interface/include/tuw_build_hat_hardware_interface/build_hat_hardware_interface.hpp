@@ -36,6 +36,9 @@ namespace tuw_build_hat_hardware_interface {
             std::string shm_velocity_right_;
             std::string shm_position_left_;
             std::string shm_position_right_;
+            double kp_;
+            double ki_;
+            double kd_;
             int msgs_loglevel_;
 
     };

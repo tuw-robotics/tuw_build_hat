@@ -24,6 +24,7 @@ void Motor::init() {
     cmd_ += std::format("\r");
 
     serial_serach_str_ = "P" + std::to_string(port_) + "C0";
+    cumulative_deg_offset_ = std::numeric_limits<long>::max();
 }
 
 void Motor::set_target_radian_per_sec(double speed, double kp, double ki, double kd) {
@@ -45,7 +46,7 @@ void Motor::set_target_radian_per_sec(double speed, double kp, double ki, double
     ki_ = ki;                    // Integral gain. The time base is 1 s.
     kd_ = kd;                    // Derivative gain. The time base is 1 s.
     int windup = 100;            // Absolute clamp on the integrator
-    double deadzone = 0.01;      // Error band (rad/s) where the controller does not react
+    double deadzone = 0.1;      // Error band (rad/s) where the controller does not react
 
     // pwmparams configure parameters for PWM driver
     double pwmthresh = 0.65; // threshold for slow/fast PWM switchover (default 0)
@@ -86,8 +87,11 @@ int Motor::decode(const std::string &line) {
         return BuildHat::DECODE_ERROR;
     }
 
+    if(cumulative_deg_offset_ == std::numeric_limits<long>::max()){
+        cumulative_deg_offset_ = cumulative_deg;
+    }
     speed_current_ = Device::convert_percent_to_speed(speed_percent, MAX_RAD_PER_SEC);
-    cumulative_rad_ = Device::convert_deg_to_rad(cumulative_deg);
+    cumulative_rad_ = Device::convert_deg_to_rad(cumulative_deg - cumulative_deg_offset_);
     absolute_rad_ = Device::normalize_rad(Device::convert_deg_to_rad(absolute_deg));
 
     return BuildHat::DECODE_SUCCESS;
