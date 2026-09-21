@@ -10,13 +10,13 @@
     </node>
 
     <node pkg="controller_manager" exec="ros2_control_node">
-        <param from="$(find-pkg-share tuw_build_hat_bringup)/config/my_robot_controllers.yaml" />
+        <param from="$(find-pkg-share tuw_build_hat_bringup)/config/diffdrive_controllers.yaml" />
     </node>
 
     <node pkg="controller_manager" exec="spawner" args="joint_state_broadcaster" />
 
     <node pkg="controller_manager" exec="spawner" args="diff_drive_controller">
-        <param from="$(find-pkg-share tuw_build_hat_bringup)/config/my_robot_controllers.yaml" />
+        <param from="$(find-pkg-share tuw_build_hat_bringup)/config/diffdrive_controllers.yaml" />
     </node>
 
     <node pkg="rviz2" exec="rviz2" output="screen" 
