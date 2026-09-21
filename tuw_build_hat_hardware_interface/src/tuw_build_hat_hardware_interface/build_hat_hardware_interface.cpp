@@ -15,10 +15,16 @@ hardware_interface::CallbackReturn BuildHatHardwareInterface::on_init(const hard
         RCLCPP_ERROR(get_logger(), "Not both joints specified");
         return CallbackReturn::ERROR;
     }
-    joint_left_ = params.hardware_info.joints[0].name;
-    joint_right_ = params.hardware_info.joints[1].name;
-    RCLCPP_INFO(get_logger(), "Left joint name: %s", joint_left_.c_str());
-    RCLCPP_INFO(get_logger(), "Right joint name: %s", joint_right_.c_str());
+    std::string joint_left = params.hardware_info.joints[0].name;
+    std::string joint_right = params.hardware_info.joints[1].name;
+    RCLCPP_INFO(get_logger(), "Left joint name: %s", joint_left.c_str());
+    RCLCPP_INFO(get_logger(), "Right joint name: %s", joint_right.c_str());
+
+
+    shm_velocity_left_ = joint_left + "/velocity";
+    shm_velocity_right_ = joint_right + "/velocity";
+    shm_position_left_ = joint_left + "/position";
+    shm_position_right_ = joint_right + "/position";
     
 
     std::filesystem::path firmware_directory = ament_index_cpp::get_package_share_path("tuw_build_hat_driver") / "firmware";
@@ -91,10 +97,10 @@ hardware_interface::CallbackReturn BuildHatHardwareInterface::on_configure(const
 
 hardware_interface::CallbackReturn BuildHatHardwareInterface::on_activate(const rclcpp_lifecycle::State & /*previous_state*/) {
 
-    set_state(joint_left_ + "/velocity", 0.);
-    set_state(joint_left_ + "/velocity", 0.);
-    set_state(joint_right_ + "/position", 0.);
-    set_state(joint_right_ + "/position", 0.);
+    set_state(shm_velocity_left_, 0.);
+    set_state(shm_velocity_right_, 0.);
+    set_state(shm_position_left_, 0.);
+    set_state(shm_position_right_, 0.);
     return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -107,21 +113,17 @@ hardware_interface::CallbackReturn BuildHatHardwareInterface::on_deactivate(cons
 }
 
 hardware_interface::return_type BuildHatHardwareInterface::read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
-    double pos_left = motor_left_->get_position_cumulative_radian();
-    double pos_right = motor_right_->get_position_cumulative_radian();
-    double vel_left = motor_left_->get_velocity_radian_per_sec();
-    double vel_right = motor_right_->get_velocity_radian_per_sec();
-    set_state(joint_right_ + "/velocity", vel_left);
-    set_state(joint_right_ + "/position", pos_left);
-    set_state(joint_left_ + "/velocity", vel_right);
-    set_state(joint_left_ + "/position", pos_right);
+    set_state(shm_velocity_left_, motor_left_->get_velocity_radian_per_sec());
+    set_state(shm_velocity_right_, motor_right_->get_velocity_radian_per_sec());
+    set_state(shm_position_left_, motor_left_->get_position_cumulative_radian());
+    set_state(shm_position_right_, motor_right_->get_position_cumulative_radian());
     return hardware_interface::return_type::OK;
 }
 
 hardware_interface::return_type BuildHatHardwareInterface::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
 
-    motor_left_->set_target_radian_per_sec(get_command(joint_left_ + "/velocity"));
-    motor_right_->set_target_radian_per_sec(get_command(joint_right_ + "/velocity"));
+    motor_left_->set_target_radian_per_sec(get_command(shm_velocity_left_));
+    motor_right_->set_target_radian_per_sec(get_command(shm_velocity_right_));
     build_hat_->commit();
     return hardware_interface::return_type::OK;
 }
