@@ -16,7 +16,7 @@
     <link name="plate_link">
         <visual>
             <geometry>
-                <mesh filename="package://tuw_build_hat_description/meshes/plate_11x19x1.obj" scale="1 1 1" />
+                <mesh filename="package://tuw_build_hat_description/models/lego/meshes/plate_11x19x1.obj" scale="1 1 1" />
             </geometry>
             <origin xyz="0 0 ${plate_height / 2.0}" rpy="0 0 ${pi / 2.0}" />
             <material name="yellow" />
@@ -27,7 +27,7 @@
         <link name="${prefix}_wheel_link">
             <visual>
                 <geometry>
-                    <mesh filename="package://tuw_build_hat_description/meshes/wheel.obj" scale="1 1 1" />
+                    <mesh filename="package://tuw_build_hat_description/models/lego/meshes/wheel.obj" scale="1 1 1" />
                 </geometry>
                 <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
                 <material name="sky_blue" />

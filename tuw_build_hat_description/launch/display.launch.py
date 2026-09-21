@@ -8,7 +8,7 @@ from ament_index_python.packages import get_package_share_path
 def generate_launch_description():
 
     urdf_path = os.path.join(get_package_share_path('tuw_build_hat_description'),
-                             'urdf', 'my_robot.urdf.xacro')
+                             'models', 'diffdrive_base', 'main.xacro')
     rviz_config_path = os.path.join(get_package_share_path('tuw_build_hat_description'),
                                     'rviz', 'urdf_config.rviz')
     

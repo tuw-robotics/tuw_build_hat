@@ -1,6 +1,6 @@
 <launch>
     <let name="urdf_path"
-         value="$(find-pkg-share tuw_build_hat_description)/urdf/my_robot.urdf.xacro" />
+         value="$(find-pkg-share tuw_build_hat_description)/models/diffdrive_base/main.xacro" />
     <let name="rviz_config_path"
          value="$(find-pkg-share tuw_build_hat_description)/rviz/urdf_config.rviz" />
 
