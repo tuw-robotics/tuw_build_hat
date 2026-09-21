@@ -4,20 +4,22 @@ A C++ driver for the Raspberry Pi Build HAT, talking to it directly over a seria
 connection (Boost.Asio). It uploads firmware to the Build HAT bootloader when needed,
 and drives/reads back devices such as motors that are plugged into its ports.
 
-## Not a ROS package (in spirit)
+## A ROS 2 package, but only at the build-system level
 
-This is a plain, ROS-independent CMake project — its `CMakeLists.txt` uses only
-standard CMake (`find_package`/`install`/`GNUInstallDirs`), with no `ament_cmake` and no
-`ament_*` calls anywhere. **The driver code does not link against any ROS libraries**
-either (no `rclcpp`, no ROS messages, no middleware). `BuildHat`, `Device` and `Motor`
-are plain C++ classes with no ROS dependency at all — their only third-party dependency
-is Boost (`boost::asio` for the serial link, `boost::program_options` in the demo for
-argument parsing). This makes the driver usable standalone, or from any other
-framework, not just ROS 2 nodes.
+This is packaged as a regular `ament_cmake` package (`package.xml` +
+`CMakeLists.txt` calling `find_package(ament_cmake REQUIRED)` / `ament_package()`) so
+it builds and installs cleanly inside a `colcon` workspace alongside other ROS 2
+packages, and exports a standard CMake target (`tuw_build_hat_driver::build_hat_driver`)
+for other ament packages to depend on.
 
-A `package.xml` is still included purely so the package can sit inside a ROS 2
-workspace and be found by `colcon`/rosdep alongside other packages there; it is not
-needed to build this package on its own.
+**The driver itself stays pure C++ and has no ROS dependency at runtime.**
+`BuildHat`, `Device` and `Motor` don't include `rclcpp`, don't define any nodes,
+topics, services or messages, and don't link against ROS middleware — their only
+third-party dependency is Boost (`boost::asio` for the serial link,
+`boost::program_options` in the demo for argument parsing). ROS 2 is only involved in
+*how the package is built and found* (`ament_cmake`/`colcon`), not in what the driver
+code does. This makes `BuildHat`/`Device`/`Motor` reusable from non-ROS code too, as
+long as it links the `build_hat_driver` library directly.
 
 ## Layout
 
@@ -36,27 +38,33 @@ needed to build this package on its own.
 
 ## Building
 
-As a standalone CMake project, without colcon or ROS involved at all:
+Since `CMakeLists.txt` relies on `ament_cmake` (and `find_package(rclcpp REQUIRED)`),
+building it requires a sourced ROS 2 environment, normally as part of a colcon
+workspace:
 
 ```bash
+source /opt/ros/<distro>/setup.bash
+colcon build --packages-select tuw_build_hat_driver
+source install/setup.bash
+```
+
+It can also be configured with plain CMake instead of colcon, as long as the ROS 2
+environment is sourced first so `ament_cmake`/`rclcpp` can be found on
+`CMAKE_PREFIX_PATH`:
+
+```bash
+source /opt/ros/<distro>/setup.bash
 cd tuw_build_hat_driver
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
-```
-
-If it happens to sit inside a ROS 2 workspace, it also builds fine through colcon:
-
-```bash
-colcon build --packages-select tuw_build_hat_driver
-source install/setup.bash
 ```
 
 ## Demo
 
 `demo` is a minimal example program that registers one `Motor`, spins it forward for a
 few seconds, then backward, then stops it. Run it with `--help` to see all options
-(paths below assume the standalone CMake build; with colcon it's
-`install/tuw_build_hat_driver/bin/demo` instead):
+(paths below assume the plain CMake build; with colcon it's
+`install/tuw_build_hat_driver/lib/demo` instead):
 
 ```bash
 ./build/demo --help
