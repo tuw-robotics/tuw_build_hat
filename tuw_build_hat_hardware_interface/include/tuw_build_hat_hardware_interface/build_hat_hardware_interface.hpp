@@ -32,6 +32,8 @@ namespace tuw_build_hat_hardware_interface {
             std::string filename_signature_;
             std::string filename_serial_log_;
             std::string filename_msgs_log_;
+            std::string joint_left_;
+            std::string joint_right_;
             int msgs_loglevel_;
 
     };

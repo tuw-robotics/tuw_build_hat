@@ -4,8 +4,6 @@
 
     <ros2_control name="MobileBase" type="system">
         <hardware>
-            <!-- <plugin>mock_components/GenericSystem</plugin>
-            <param name="calculate_dynamics">true</param> -->
             <plugin>tuw_build_hat_hardware_interface/BuildHatHardwareInterface</plugin>
             <param name="serial_pdort">/dev/ttyUSB0</param>
             <param name="port_motor_left">0</param>

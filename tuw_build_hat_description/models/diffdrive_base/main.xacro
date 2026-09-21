@@ -3,6 +3,7 @@
 
     <xacro:include filename="body/common_properties.xacro" />
     <xacro:include filename="body/mobile_base.xacro" />
-    <xacro:include filename="mobile_base_with_mock_component.xacro" />
+    <!-- <xacro:include filename="mobile_base_with_mock_component.xacro" /> -->
+    <xacro:include filename="mobile_base_with_build_hat.xacro" />
 
 </robot>
