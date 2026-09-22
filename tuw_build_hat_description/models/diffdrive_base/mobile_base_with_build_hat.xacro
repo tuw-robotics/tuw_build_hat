@@ -9,7 +9,7 @@
             <param name="port_motor_left">0</param>
             <param name="port_motor_right">1</param>
             <param name="msgs_loglevel">0</param>
-            <param name="filename_serial_log">/tmp/build_hat_serial.log</param>
+            <param name="filename_serial_log"></param>
             <param name="filename_msgs_log">/tmp/build_hat_msg.log</param>
             <param name="kp">0.003</param>
             <param name="ki">0.001</param>

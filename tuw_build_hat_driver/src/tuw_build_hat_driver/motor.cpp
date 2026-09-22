@@ -50,9 +50,9 @@ void Motor::set_target_radian_per_sec(double speed, double kp, double ki, double
 
     // pwmparams configure parameters for PWM driver
     double pwmthresh = 0.65; // threshold for slow/fast PWM switchover (default 0)
-    double minpwm = 0.01;    // minimum PWM driver input value (default 0)
+    double minpwm = 0.05;    // minimum PWM driver input value (default 0)
     cmd_ += std::format("port {}; ", port_);
-    cmd_ += std::format("pwmparams {} {}", pwmthresh, minpwm);                                                                                            
+    cmd_ += std::format("pwmparams {} {}; ", pwmthresh, minpwm);                                                                                            
     cmd_ += std::format("pid {} {} {} {} {} {} {} {} {} {} {}; ", pvport, pvmode, pvoffset, pvformat, pvscale, pvunwrap, kp_, ki_, kd_, windup, deadzone);
     cmd_ += std::format("set {}; ", percent);
     cmd_ += std::format("\r");

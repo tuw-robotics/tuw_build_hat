@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 50
+    update_rate: 20
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -38,8 +38,8 @@ diff_drive_controller:
     linear.x.min_jerk: .NAN
 
 
-    angular.z.max_velocity:  3.14
-    angular.z.min_velocity: -3.14
+    angular.z.max_velocity:  6.28
+    angular.z.min_velocity: -6.28
     angular.z.max_acceleration: .NAN
     angular.z.max_deceleration: .NAN
     angular.z.max_acceleration_reverse: .NAN
