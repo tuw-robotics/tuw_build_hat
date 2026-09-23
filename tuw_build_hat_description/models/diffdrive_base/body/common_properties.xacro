@@ -1,6 +1,33 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    
+
+    <xacro:property name="plate_mass" value="0.010" />
+    <xacro:property name="plate_length" value="0.152" />
+    <xacro:property name="plate_width" value="0.088" />
+    <xacro:property name="plate_height" value="0.008" />
+    <xacro:property name="plate_offset_z" value="0.012" />
+    <xacro:property name="plate_offset_x" value="0.032" />
+    <xacro:property name="caster_wheel_offset" value="0.088" />
+    <xacro:property name="wheel_mass" value="0.010" />
+    <xacro:property name="wheel_radius" value="0.028" />
+    <xacro:property name="wheel_length" value="0.014" />
+    <xacro:property name="caster_mass" value="0.002" />
+    <xacro:property name="caster_radius" value="${wheel_radius/2}" />
+    <xacro:property name="motor_mass" value="0.075" />
+    <xacro:property name="motor_wheel_offset_x" value="0.0195" />
+    <xacro:property name="motor_wheel_offset_y" value="0.008" />
+    <xacro:property name="motor_length" value="0.071" />
+    <xacro:property name="motor_width" value="0.023" />
+    <xacro:property name="motor_height" value="0.023" />
+    <xacro:property name="pi_mass" value="0.050" />
+    <xacro:property name="pi_length" value="0.080" />
+    <xacro:property name="pi_width" value="0.055" />
+    <xacro:property name="pi_height" value="0.030" />
+    <xacro:property name="battery_mass" value="0.050" />
+    <xacro:property name="battery_length" value="0.040" />
+    <xacro:property name="battery_width" value="0.075" />
+    <xacro:property name="battery_height" value="0.015" />
+
     <material name="blue">
         <color rgba="0 0 0.5 1" />
     </material>
@@ -13,8 +40,20 @@
         <color rgba="1 1 0 1" />
     </material>
 
+    <material name="green">
+        <color rgba="0.3 1 0.3 1" />
+    </material>
+
     <material name="sky_blue">
         <color rgba="0.529 0.808 0.922 1" />
     </material>
+
+    <xacro:macro name="box_inertia" params="mass length width height">
+        <inertia
+            ixx="${mass / 12.0 * (length*length + height*height)}"
+            iyy="${mass / 12.0 * (height*height + width*width)}"
+            izz="${mass / 12.0 * (width*width   + length*length)}"
+            ixy="0.0" ixz="0.0" iyz="0.0" />
+    </xacro:macro>
 
 </robot>

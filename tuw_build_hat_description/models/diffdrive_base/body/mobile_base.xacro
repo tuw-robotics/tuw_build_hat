@@ -1,17 +1,21 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:property name="plate_length" value="0.152" />
-    <xacro:property name="plate_width" value="0.088" />
-    <xacro:property name="plate_height" value="0.008" />
-    <xacro:property name="plate_offset_z" value="0.016" />
-    <xacro:property name="plate_offset_x" value="0.032" />
-    <xacro:property name="caster_wheel_offset" value="0.088" />
-    <xacro:property name="wheel_radius" value="0.028" />
-    <xacro:property name="wheel_length" value="0.014" />
+    <link name="base_link">
+        <inertial name="base_link_inertia">
+            <mass value="0.0" />
+            <inertia ixx="0.0" iyy="0.0" izz="0.0"
+                     ixy="0.0" ixz="0.0" iyz="0.0" />
+        </inertial>
+    </link>
+    <link name="center_link">
+        <inertial name="center_link_inertia">
+            <mass value="0.0" />
+            <inertia ixx="0.0" iyy="0.0" izz="0.0"
+                     ixy="0.0" ixz="0.0" iyz="0.0" />
+        </inertial>
+    </link>
 
-    <link name="base_link" />
-    <link name="center_link"/>
 
     <link name="plate_link">
         <visual>
@@ -21,32 +25,137 @@
             <origin xyz="0 0 ${plate_height / 2.0}" rpy="0 0 ${pi / 2.0}" />
             <material name="yellow" />
         </visual>
+        <collision>
+            <geometry>
+                <box size="${plate_length} ${plate_width} ${plate_height}" />
+            </geometry>
+        </collision>
+        <inertial name="plate_link_inertia">
+            <mass value="${plate_mass}" />
+            <xacro:box_inertia mass="${plate_mass}" length="${plate_length}" width="${plate_width}" height="${plate_height}" />
+            <origin xyz="0 0 ${plate_height / 2.0}" />
+        </inertial>
     </link>
 
-    <xacro:macro name="wheel_link" params="prefix">
+    <link name="pi_link">
+        <visual>
+            <geometry>
+                <box size="${pi_length} ${pi_width} ${pi_height}" />
+            </geometry>
+            <material name="green" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${pi_length} ${pi_width} ${pi_height}" />
+            </geometry>
+        </collision>
+        <inertial name="pi_link_inertia">
+            <mass value="${pi_mass}" />
+            <xacro:box_inertia mass="${pi_mass}" length="${pi_length}" width="${pi_width}" height="${pi_height}" />
+        </inertial>
+    </link>
+
+    <link name="battery_link">
+        <visual>
+            <geometry>
+                <box size="${battery_length} ${battery_width} ${battery_height}" />
+            </geometry>
+            <material name="grey" />
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${battery_length} ${battery_width} ${battery_height}" />
+            </geometry>
+        </collision>
+        <inertial name="battery_link_inertia">
+            <mass value="${battery_mass}" />
+            <xacro:box_inertia mass="${battery_mass}" length="${battery_length}" width="${battery_width}" height="${battery_height}" />
+        </inertial>
+    </link>
+
+    <link name="caster_housing_link">
+        <visual>
+            <geometry>
+                <box size="${wheel_radius} ${wheel_radius * 1.5} ${wheel_radius}" />
+            </geometry>
+            <material name="sky_blue" />
+            <origin xyz="0 0 -${wheel_radius/2.0}" rpy="0 0 0" />
+        </visual>
+    </link>
+
+    <link name="caster_wheel_link">
+        <visual>
+            <geometry>
+                <sphere radius="${caster_radius}" />
+            </geometry>
+            <material name="grey" />
+        </visual>
+        <collision>
+            <geometry>
+                <sphere radius="${caster_radius}" />
+            </geometry>
+        </collision>
+        <inertial name="caster_wheel_link_inertia">
+            <mass value="${caster_mass}" />
+            <inertia
+                ixx="${2.0/5.0 * caster_mass * caster_radius*caster_radius}"
+                iyy="${2.0/5.0 * caster_mass * caster_radius*caster_radius}"
+                izz="${2.0/5.0 * caster_mass * caster_radius*caster_radius}"
+                ixy="0.0" ixz="0.0" iyz="0.0" />
+        </inertial>
+    </link>
+
+    <xacro:macro name="wheel_assembly" params="prefix">
+        <link name="${prefix}_motor_link">
+            <visual>
+                <geometry>
+                    <mesh filename="package://tuw_build_hat_description/models/lego/meshes/medium_motor.dae" scale="1 1 1" />
+                </geometry>
+                <!--<material name="sky_blue" />-->
+            </visual>
+            <collision>
+                <geometry>
+                    <box size="${motor_length} ${motor_width} ${motor_height}" />
+                </geometry>
+            </collision>
+            <inertial name="${prefix}_motor_link_inertia">
+                <mass value="${motor_mass}" />
+                <xacro:box_inertia mass="${motor_mass}" length="${motor_length}" width="${motor_width}" height="${motor_height}" />
+            </inertial>
+        </link>
+
         <link name="${prefix}_wheel_link">
             <visual>
                 <geometry>
                     <mesh filename="package://tuw_build_hat_description/models/lego/meshes/wheel.obj" scale="1 1 1" />
                 </geometry>
-                <origin xyz="0 0 0" rpy="${pi / 2.0} 0 0" />
                 <material name="sky_blue" />
             </visual>
+            <collision>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_length}" />
+                </geometry>
+            </collision>
+            <inertial name="${prefix}_wheel_link_inertia">
+                <mass value="${wheel_mass}" />
+                <inertia
+                    ixx="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_length*wheel_length)}"
+                    iyy="${wheel_mass / 12.0 * (3*wheel_radius*wheel_radius + wheel_length*wheel_length)}"
+                    izz="${wheel_mass / 2.0  * wheel_radius*wheel_radius}"
+                    ixy="0.0" ixz="0.0" iyz="0.0" />
+            </inertial>
         </link>
+
+        <joint name="${prefix}_motor_wheel_joint" type="continuous">
+            <parent link="${prefix}_motor_link" />
+            <child link="${prefix}_wheel_link" />
+            <origin xyz="${motor_wheel_offset_x} -${motor_width / 2.0 + motor_wheel_offset_y} 0" rpy="${pi / 2.0} 0 0" />
+            <axis xyz="0 0 1" />
+        </joint>
     </xacro:macro>
-
-    <xacro:wheel_link prefix="right" />
-    <xacro:wheel_link prefix="left" />
-
-    <link name="caster_wheel_link">
-        <visual>
-            <geometry>
-                <sphere radius="${wheel_radius / 2.0}" />
-            </geometry>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <material name="grey" />
-        </visual>
-    </link>
+    
+    <xacro:wheel_assembly prefix="right" />
+    <xacro:wheel_assembly prefix="left" />
 
     <joint name="center_joint" type="fixed">
         <parent link="base_link" />
@@ -60,24 +169,41 @@
         <origin xyz="${plate_offset_x} 0 ${plate_offset_z}" rpy="0 0 0"/>
     </joint>
 
-    <joint name="center_right_wheel_joint" type="continuous">
-        <parent link="center_link" />
-        <child link="right_wheel_link" />
-        <origin xyz="0 ${-(plate_width + wheel_length) / 2.0} 0" rpy="0 0 0" />
-        <axis xyz="0 1 0" />
+    <joint name="plate_pi_joint" type="fixed">
+        <parent link="plate_link" />
+        <child link="pi_link" />
+        <origin xyz="${(plate_length - pi_length)/2.0} 0 ${plate_height + pi_height/2.0}" rpy="0 0 0"/>
     </joint>
 
-    <joint name="center_left_wheel_joint" type="continuous">
-        <parent link="center_link" />
-        <child link="left_wheel_link" />
-        <origin xyz="0 ${(plate_width + wheel_length) / 2.0} 0" rpy="0 0 0" />
-        <axis xyz="0 1 0" />
+    <joint name="plate_battery_joint" type="fixed">
+        <parent link="plate_link" />
+        <child link="battery_link" />
+        <origin xyz="${(plate_length/2.0 - pi_length) - (battery_length/2.0) - 0.008} 0 ${plate_height + battery_height/2.0}" rpy="0 0 0"/>
     </joint>
 
-    <joint name="center_caster_wheel_joint" type="fixed">
+    <joint name="center_right_motor_joint" type="fixed">
+        <parent link="center_link" />
+        <child link="right_motor_link" />
+        <origin xyz="${motor_wheel_offset_x} ${-(plate_width - motor_width) / 2.0} 0" rpy="0 ${pi} 0" />
+    </joint>
+
+    <joint name="center_left_motor_joint" type="fixed">
+        <parent link="center_link" />
+        <child link="left_motor_link" />
+        <origin xyz="${motor_wheel_offset_x} ${(plate_width - motor_width) / 2.0} 0" rpy="${pi} ${pi} 0" />
+    </joint>
+
+    <joint name="plate_caster_housing_joint" type="fixed">
+        <parent link="plate_link" />
+        <child link="caster_housing_link" />
+        <origin xyz="${-plate_offset_x + caster_wheel_offset} 0 0" rpy="0 0 0" />
+    </joint>
+
+    <joint name="center_caster_wheel_joint" type="continuous">
         <parent link="center_link" />
         <child link="caster_wheel_link" />
         <origin xyz="${caster_wheel_offset} 0 ${-wheel_radius / 2.0}" rpy="0 0 0" />
+        <axis xyz="1 1 1" />
     </joint>
 
 </robot>
