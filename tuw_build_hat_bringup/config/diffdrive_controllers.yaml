@@ -1,3 +1,10 @@
+# instructions for bridge-plugin between gazebo and ros2_control
+gz_ros_control:
+  ros__parameters:
+    hold_joints: true
+    position_proportional_gain: 0.1
+
+# from now on: everything relevant for real and simulated robot
 controller_manager:
   ros__parameters:
     update_rate: 20
@@ -14,8 +21,8 @@ joint_state_broadcaster:
 
 diff_drive_controller:
   ros__parameters:
-    left_wheel_names: ["center_left_wheel_joint"]
-    right_wheel_names: ["center_right_wheel_joint"]
+    left_wheel_names: ["left_motor_wheel_joint"]
+    right_wheel_names: ["right_motor_wheel_joint"]
 
     wheel_separation: 0.112
     wheel_radius: 0.028

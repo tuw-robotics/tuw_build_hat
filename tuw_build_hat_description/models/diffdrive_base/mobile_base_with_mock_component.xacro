@@ -12,7 +12,7 @@
             <state_interface name="position" />
             <state_interface name="velocity" />
         </joint>        
-        <joint name="center_left_wheel_joint">
+        <joint name="center_right_wheel_joint">
             <command_interface name="velocity" />
             <state_interface name="position" />
             <state_interface name="velocity" />

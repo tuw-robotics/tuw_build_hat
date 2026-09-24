@@ -12,7 +12,7 @@ def generate_launch_description():
     rviz_config_path = os.path.join(get_package_share_path('tuw_build_hat_description'),
                                     'rviz', 'urdf_config.rviz')
     
-    robot_description = ParameterValue(Command(['xacro ', urdf_path]), value_type=str)
+    robot_description = ParameterValue(Command(['xacro ', str(urdf_path), ' init_controller:=false']), value_type=str)
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",

@@ -1,7 +1,7 @@
 from ament_index_python.packages import get_package_share_path
 from launch import LaunchDescription
 from launch_ros.parameter_descriptions import ParameterValue
-from launch.substitutions import Command
+from launch.substitutions import Command, FileContent
 from launch_ros.actions import Node
 import os
 
@@ -11,7 +11,7 @@ def generate_launch_description():
     
     urdf_path = os.path.join(robot_description_path, 'models', 'diffdrive_base', 'main.xacro')
     rviz_config_path = os.path.join(robot_description_path, 'rviz', 'urdf_config.rviz')
-    robot_description = ParameterValue(Command(['xacro ', urdf_path]), value_type=str)
+    robot_description = ParameterValue(Command(['xacro ', str(urdf_path), ' init_controller:=false']), value_type=str)
     robot_controllers = os.path.join(robot_bringup_path, 'config', 'diffdrive_controllers.yaml')
 
     robot_state_publisher_node = Node(
@@ -20,16 +20,17 @@ def generate_launch_description():
         parameters=[{'robot_description': robot_description}],
     )
 
-    control_node = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[robot_controllers],
-    )    
+    #control_node = Node(
+    #    package="controller_manager",
+    #    executable="ros2_control_node",
+    #    parameters=[robot_controllers],
+    #)
     
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster"],
+        arguments=["-p", robot_controllers,
+                    "joint_state_broadcaster"],
     )
 
     diff_drive_controller_spawner = Node(
@@ -48,7 +49,7 @@ def generate_launch_description():
  
     return LaunchDescription([
         robot_state_publisher_node,
-        control_node,
+        #control_node,
         joint_state_broadcaster_spawner,
         diff_drive_controller_spawner,
         rviz_node,
