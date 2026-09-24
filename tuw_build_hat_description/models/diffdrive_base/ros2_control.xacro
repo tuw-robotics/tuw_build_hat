@@ -36,7 +36,7 @@
         <gazebo>
             <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
               <!-- ROS parameters for the controller manager given via a path to the param .yaml or directly as xml tags -->
-              <parameters>/home/arc/projects/imr2026_solution/ws02/src/tuw_build_hat/tuw_build_hat_bringup/config/diffdrive_controllers.yaml</parameters>
+              <parameters>$(find tuw_build_hat_bringup)/config/diffdrive_controllers.yaml</parameters>
               <!--
               <hold_joints>true</hold_joints>
               <position_proportional_gain>0.1</position_proportional_gain>-->
