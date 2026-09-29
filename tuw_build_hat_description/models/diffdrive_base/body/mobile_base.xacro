@@ -99,7 +99,7 @@
         </inertial>
     </link>
 
-    <xacro:macro name="wheel_assembly" params="prefix">
+    <xacro:macro name="wheel_assembly" params="prefix mirror_wheel">
         <link name="${prefix}_motor_link">
             <visual>
                 <geometry>
@@ -143,13 +143,13 @@
         <joint name="${prefix}_motor_wheel_joint" type="continuous">
             <parent link="${prefix}_motor_link" />
             <child link="${prefix}_wheel_link" />
-            <origin xyz="${motor_wheel_offset_x} -${motor_width / 2.0 + motor_wheel_offset_y} 0" rpy="${pi / 2.0} 0 0" />
+            <origin xyz="${motor_wheel_offset_x} -${motor_width / 2.0 + motor_wheel_offset_y} 0" rpy="${pi / 2.0} 0 ${mirror_wheel*pi}" />
             <axis xyz="0 0 1" />
         </joint>
     </xacro:macro>
     
-    <xacro:wheel_assembly prefix="right" />
-    <xacro:wheel_assembly prefix="left" />
+    <xacro:wheel_assembly prefix="right" mirror_wheel="1" />
+    <xacro:wheel_assembly prefix="left"  mirror_wheel="0" />
 
     <joint name="center_joint" type="fixed">
         <parent link="base_link" />
@@ -193,11 +193,10 @@
         <origin xyz="${-plate_offset_x + caster_wheel_offset} 0 0" rpy="0 0 0" />
     </joint>
 
-    <joint name="center_caster_wheel_joint" type="continuous">
+    <joint name="center_caster_wheel_joint" type="fixed">
         <parent link="center_link" />
         <child link="caster_wheel_link" />
         <origin xyz="${caster_wheel_offset} 0 ${-wheel_radius / 2.0}" rpy="0 0 0" />
-        <axis xyz="1 1 1" />
     </joint>
 
 </robot>
