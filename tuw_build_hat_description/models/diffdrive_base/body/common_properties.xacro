@@ -56,4 +56,20 @@
             ixy="0.0" ixz="0.0" iyz="0.0" />
     </xacro:macro>
 
+
+    <xacro:macro name="surface_friction" params="mu1 mu2">
+        <surface>
+            <friction>
+                <ode>
+                    <mu> "${mu1}"</mu>
+                    <mu2>"${mu2}"</mu2>
+                </ode>
+            </friction>
+            <bullet>
+                <friction1>"${mu1}" </friction1>
+                <friction2>"${mu2}" </friction2>
+            </bullet>
+        </surface>
+    </xacro:macro>
+
 </robot>
