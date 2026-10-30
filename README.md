@@ -26,8 +26,8 @@ tmuxinator start -p tmux/demo_gz.yml
 tmuxinator start -p tmux/demo_gz.yml world=<name>   # other world, the <world name> inside <name>.sdf must match
 ```
 
-| tmux session | Gazebo | rviz2 |
-|---|---|---|
-| <img src="tuw_build_hat_bringup/res/screenshot_tmux.jpg" width="300"> | <img src="tuw_build_hat_bringup/res/screenshot_gz.png" width="300"> | <img src="tuw_build_hat_bringup/res/screenshot_rviz2.jpg" width="300"> |
+| Gazebo | rviz2 |
+|---|---|
+| <img src="tuw_build_hat_bringup/res/screenshot_gz.png" width="400"> | <img src="tuw_build_hat_bringup/res/screenshot_rviz2.jpg" width="400"> |
 
 The individual commands are described in [tuw_build_hat_bringup](tuw_build_hat_bringup/README.md).
