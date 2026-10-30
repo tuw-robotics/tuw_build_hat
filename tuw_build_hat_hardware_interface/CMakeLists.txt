@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.28)
 project(tuw_build_hat_hardware_interface)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -13,7 +13,7 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(tuw_build_hat_driver REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(Boost REQUIRED COMPONENTS program_options)
+find_package(Boost REQUIRED CONFIG COMPONENTS program_options)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

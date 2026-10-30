@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<robot name="lego_diffdrive" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:arg name="namespace"        default=""/>
+    <xacro:property name="namespace"   value="$(arg namespace)"/>
+
+    <xacro:arg name="setup"        default="gz"/>
+    <xacro:property name="setup"   value="$(arg setup)"/>
+
+    <xacro:arg name="pkg_prefix"        default=""/>
+    <xacro:property name="pkg_prefix"   value="$(arg pkg_prefix)"/>
+
+    <xacro:include filename="body/common_properties.xacro" />
+    <xacro:include filename="body/mobile_base.xacro" />
+
+    <!-- simulation with ros2_control: controller manager runs inside gazebo -->
+    <xacro:if value="${setup == 'gz'}">
+        <xacro:include filename="control/ros2_gz_control.xacro" />
+    </xacro:if>
+
+    <!-- real hardware with ros2_control: build hat hardware interface -->
+    <xacro:if value="${setup == 'hw'}">
+        <xacro:arg name="serial_port"        default="/dev/ttyAMA0"/>
+        <xacro:property name="serial_port"   value="$(arg serial_port)"/>
+    
+        <xacro:include filename="control/ros2_hw_control.xacro" />
+    </xacro:if>
+
+</robot>

@@ -3,8 +3,9 @@
     
     <ros2_control name="MobileBase" type="system">    
         <hardware>
+            <!--TODO: correct package name as soon as build hat exists in course environment-->
             <plugin>tuw_build_hat_hardware_interface/BuildHatHardwareInterface</plugin>
-            <param name="serial_port">/dev/ttyAMA0</param>
+            <param name="serial_port">${serial_port}</param>
             <param name="port_motor_left">0</param>
             <param name="port_motor_right">1</param>
             <param name="msgs_loglevel">0</param>

@@ -16,22 +16,13 @@
             <state_interface name="velocity" />
         </joint>
     </ros2_control>
-
-    <!-- Load the gz_ros2_control plugin to instantiate a controller manager with its interfaces bridged to gazebo -->
+    
+        <!-- Load the gz_ros2_control plugin to instantiate a controller manager with its interfaces bridged to gazebo -->
     <gazebo>
         <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
           <!-- ROS parameters for the controller manager given via a path to the param .yaml or directly as xml tags -->
           <parameters>$(find tuw_build_hat_bringup)/config/diffdrive_controllers.yaml</parameters>
           <controller_manager_prefix_node_name>controller_manager</controller_manager_prefix_node_name>
-          <!--
-          <hold_joints>true</hold_joints>
-          <position_proportional_gain>0.1</position_proportional_gain>-->
-          <!-- remappings of the instantiated controller manager done in <ros> tag
-          <ros>
-            <namespace>my_namespace</namespace>
-            <remapping>/robot_description:=/robot_description_full</remapping>
-          </ros>
-          -->
         </plugin>
     </gazebo>
 

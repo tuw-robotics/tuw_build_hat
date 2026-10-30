@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<robot name="Spike_gz" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-    <xacro:include filename="main_gz.xacro" />
-
-</robot>

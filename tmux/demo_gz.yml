@@ -1,0 +1,27 @@
+##enable named panes in tmux.conf with:
+#set -g pane-border-format "#{pane_index} #{pane_title}"
+#set -g pane-border-status bottom
+
+# variables
+<% world = @settings["world"] || "empty" %>
+
+# windows
+name: build_hat
+
+windows:
+  - simulation:
+      layout: even-vertical
+      panes:
+        - gazebo_world:
+          - printf '\033]2;%s\033\\' 'gazebo_world'
+          - ros2 launch ros_gz_sim gz_sim.launch.py gz_args:="-r <%= world %>.sdf"
+        - bridge_clock:
+          - printf '\033]2;%s\033\\' 'bridge_clock'
+          - ros2 run ros_gz_bridge parameter_bridge /clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock
+        - robot:
+          - printf '\033]2;%s\033\\' 'robot'
+          - until gz service -l | grep -q "^/world/<%= world %>/create$"; do echo "waiting for gazebo..."; sleep 1; done
+          - ros2 launch tuw_build_hat_bringup vehicle.launch.py setup:=gz
+        - teleop_input:
+          - printf '\033]2;%s\033\\' 'teleop_input'
+          - ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=true

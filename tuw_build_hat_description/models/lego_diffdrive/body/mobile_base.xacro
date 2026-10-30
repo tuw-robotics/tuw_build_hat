@@ -14,7 +14,9 @@
     <link name="plate_link">
         <visual>
             <geometry>
-                <mesh filename="package://tuw_build_hat_description/models/lego/meshes/plate_11x19x1.obj" scale="1 1 1" />
+                <!--The base plate mesh is 7MB - we could save on ressources by just using a featureless plate instead-->
+                <mesh filename="package://${pkg_prefix}_description/meshes/lego/plate_11x19x1.dae" scale="1 1 1" />
+                <!--<box size="${plate_width} ${plate_length} ${plate_height}" />--> <!-- Width and length flipped here? -->
             </geometry>
             <origin xyz="0 0 ${plate_height / 2.0}" rpy="0 0 ${pi / 2.0}" />
             <material name="yellow" />
@@ -88,7 +90,6 @@
             <geometry>
                 <sphere radius="${caster_radius}" />
             </geometry>
-            <xacro:surface_friction mu1="0.0001" mu2="0.0001" />
         </collision>
         <inertial name="caster_wheel_link_inertia">
             <mass value="${caster_mass}" />
@@ -99,12 +100,13 @@
                 ixy="0.0" ixz="0.0" iyz="0.0" />
         </inertial>
     </link>
+    <xacro:surface_friction link="caster_wheel_link" mu1="0.0001" mu2="0.0001" />
 
     <xacro:macro name="wheel_assembly" params="prefix mirror_wheel">
         <link name="${prefix}_motor_link">
             <visual>
                 <geometry>
-                    <mesh filename="package://tuw_build_hat_description/models/lego/meshes/medium_motor.dae" scale="1 1 1" />
+                    <mesh filename="package://${pkg_prefix}_description/meshes/lego/medium_motor.dae" scale="1 1 1" />
                 </geometry>
                 <!--<material name="sky_blue" />-->
             </visual>
@@ -122,15 +124,13 @@
         <link name="${prefix}_wheel_link">
             <visual>
                 <geometry>
-                    <mesh filename="package://tuw_build_hat_description/models/lego/meshes/wheel.obj" scale="1 1 1" />
+                    <mesh filename="package://${pkg_prefix}_description/meshes/lego/wheel.dae" scale="1 1 1" />
                 </geometry>
-                <material name="sky_blue" />
             </visual>
             <collision>
                 <geometry>
                     <cylinder radius="${wheel_radius}" length="${wheel_length}" />
                 </geometry>
-                <xacro:surface_friction mu1="1.3" mu2="1.3" />
             </collision>
             <inertial name="${prefix}_wheel_link_inertia">
                 <mass value="${wheel_mass}" />
@@ -141,6 +141,7 @@
                     ixy="0.0" ixz="0.0" iyz="0.0" />
             </inertial>
         </link>
+        <xacro:surface_friction link="${prefix}_wheel_link" mu1="1.3" mu2="1.3" />
 
         <joint name="${prefix}_motor_wheel_joint" type="continuous">
             <parent link="${prefix}_motor_link" />
@@ -200,5 +201,5 @@
         <child link="caster_wheel_link" />
         <origin xyz="${caster_wheel_offset} 0 ${-wheel_radius / 2.0}" rpy="0 0 0" />
     </joint>
-
+    
 </robot>
