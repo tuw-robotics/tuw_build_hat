@@ -44,7 +44,6 @@ def generate_launch_description():
         setup = context.launch_configurations['setup']
         entity_name = context.launch_configurations['entity_name']
         serial_port = context.launch_configurations['serial_port']
-        path_ros_gz_sim = get_package_share_path('ros_gz_sim')
         launch_descriptions = LaunchDescription()
 
         if setup == "":
@@ -81,6 +80,7 @@ def generate_launch_description():
 
         if setup == "gz":
             get_logger().info("Simulation selected! --> spawning model")
+            path_ros_gz_sim = get_package_share_path('ros_gz_sim')
             spawn_model_string_config = SetLaunchConfiguration('model_string', sdf_content)
             gz_spawn_model = IncludeLaunchDescription(
                 PythonLaunchDescriptionSource(os.path.join(path_ros_gz_sim, 'launch', 'gz_spawn_model.launch.py')),
