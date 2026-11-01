@@ -19,15 +19,38 @@ source install/setup.bash
 
 ## tmux demo
 
+### simulation
+
 `tmux/demo_gz.yml` starts the whole simulation in one tmux session: empty world, clock bridge, vehicle (spawned as soon as the world is ready) and teleop.
 
 ```bash
 tmuxinator start -p tmux/demo_gz.yml
-tmuxinator start -p tmux/demo_gz.yml world=<name>   # other world, the <world name> inside <name>.sdf must match
 ```
 
 | Gazebo | rviz2 |
 |---|---|
 | <img src="tuw_build_hat_bringup/res/screenshot_gz.png" width="400"> | <img src="tuw_build_hat_bringup/res/screenshot_rviz2.jpg" width="400"> |
+
+### real robot
+
+`tmux/demo_hw.yml` has to be started on the Raspberry Pi itself and brings up the vehicle on the real hardware in a `robot` pane, together with a `teleop_input` pane to drive it.
+
+```bash
+tmuxinator start -p tmux/demo_hw.yml
+```
+
+Three launch arguments differ from their defaults:
+
+* `setup:=hw` loads the `BuildHatHardwareInterface` instead of the Gazebo plugin
+* `serial_port:=/dev/ttyAMA0` the Build HAT talks over the Pi's built-in UART, the launch default is `/dev/ttyUSB0`
+* `rviz_launch:=false` the Pi usually runs headless, start rviz2 on your desktop instead
+
+`teleop_twist_keyboard` only reads keys from the terminal that owns it, so keep the focus in the `teleop_input` pane while driving. To use a gamepad instead, comment the keyboard line in `tmux/demo_hw.yml` and enable the prepared line above it:
+
+```bash
+ros2 run tuw_gamepad gamepad_node --ros-args -p use_stamped_velocity:=true -p scale_linear:=0.5 -p scale_angular:=3.14 -p debug:=true
+```
+
+Both demo files use the tmux session name `build_hat`, so stop a running session with `tmuxinator stop build_hat` before starting the other one.
 
 The individual commands are described in [tuw_build_hat_bringup](tuw_build_hat_bringup/README.md).
