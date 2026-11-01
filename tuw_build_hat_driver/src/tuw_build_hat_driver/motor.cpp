@@ -37,11 +37,13 @@ void Motor::queue_pid_config() {
     double pvscale = 1.0;        // Multiplier applied to the raw value, 1.0 keeps the PV in percent.
     int pvunwrap = 0;            // 0 means no phase unwrapping, which is what you want for speed
     int windup = 100;            // Absolute clamp on the integrator
-    double deadzone = 0.1;       // Error band (percent) where the controller does not react
+    double deadzone = 2.0;       // Error band (percent) where the controller does not react
 
     // pwmparams configure parameters for PWM driver
     double pwmthresh = 0.65; // threshold for slow/fast PWM switchover (default 0)
-    double minpwm = 0.05;    // minimum PWM driver input value (default 0)
+    // A nonzero minpwm floors every small correction, which makes the loop limit-cycle instead
+    // of settling; the integrator breaks stiction on its own, so no floor is needed.
+    double minpwm = 0.0;     // minimum PWM driver input value (default 0)
 
     cmd_ += std::format("port {}; ", port_);
     cmd_ += std::format("pwmparams {} {}; ", pwmthresh, minpwm);
