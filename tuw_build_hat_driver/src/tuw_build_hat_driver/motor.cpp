@@ -25,35 +25,47 @@ void Motor::init() {
 
     serial_serach_str_ = "P" + std::to_string(port_) + "C0";
     cumulative_deg_offset_ = std::numeric_limits<long>::max();
+    pid_configured_ = false;
 }
 
-void Motor::set_target_radian_per_sec(double speed, double kp, double ki, double kd) {
-
-    speed_target_ = speed;
-    kp_ = kp;
-    ki_ = ki;
-    kd_ = kd;
-
-    int percent = Device::convert_speed_to_percent(speed_target_, MAX_RAD_PER_SEC);
+void Motor::queue_pid_config() {
 
     int pvport = port_;          // Port to read the process variable from
     int pvmode = 0;              // Mode to read from. Here that's the combi mode 0 you selected.
     int pvoffset = 0;            // Byte offset in that mode's data. Speed is at byte 0.
     const char *pvformat = "s1"; // Signed byte. Speed is an integer from −100 to +100 %.
-    double pvscale = 1.0;        // Multiplier applied to the raw value. Use it to convert % into rad/s.
+    double pvscale = 1.0;        // Multiplier applied to the raw value, 1.0 keeps the PV in percent.
     int pvunwrap = 0;            // 0 means no phase unwrapping, which is what you want for speed
-    kp_ = kp;                    // Proportional gain (error → drive level from −1 to 1)
-    ki_ = ki;                    // Integral gain. The time base is 1 s.
-    kd_ = kd;                    // Derivative gain. The time base is 1 s.
     int windup = 100;            // Absolute clamp on the integrator
-    double deadzone = 0.1;      // Error band (rad/s) where the controller does not react
+    double deadzone = 0.1;       // Error band (percent) where the controller does not react
 
     // pwmparams configure parameters for PWM driver
     double pwmthresh = 0.65; // threshold for slow/fast PWM switchover (default 0)
     double minpwm = 0.05;    // minimum PWM driver input value (default 0)
+
     cmd_ += std::format("port {}; ", port_);
-    cmd_ += std::format("pwmparams {} {}; ", pwmthresh, minpwm);                                                                                            
+    cmd_ += std::format("pwmparams {} {}; ", pwmthresh, minpwm);
     cmd_ += std::format("pid {} {} {} {} {} {} {} {} {} {} {}; ", pvport, pvmode, pvoffset, pvformat, pvscale, pvunwrap, kp_, ki_, kd_, windup, deadzone);
+    cmd_ += std::format("\r");
+}
+
+void Motor::set_target_radian_per_sec(double speed, double kp, double ki, double kd) {
+
+    speed_target_ = speed;
+
+    // Re-sending "pid" restarts the firmware's control loop and clears its integrator, so only
+    // emit it when the gains actually change - otherwise the I term can never accumulate.
+    if (!pid_configured_ || kp != kp_ || ki != ki_ || kd != kd_) {
+        kp_ = kp;
+        ki_ = ki;
+        kd_ = kd;
+        queue_pid_config();
+        pid_configured_ = true;
+    }
+
+    int percent = Device::convert_speed_to_percent(speed_target_, MAX_RAD_PER_SEC);
+
+    cmd_ += std::format("port {}; ", port_);
     cmd_ += std::format("set {}; ", percent);
     cmd_ += std::format("\r");
 }
@@ -63,6 +75,7 @@ void Motor::deactivate() {
     cmd_ += std::format("coast;");
     cmd_ += std::format("select");
     cmd_ += std::format("\r");
+    pid_configured_ = false; // coast stops the firmware control loop
 }
 
 bool Motor::is_feedback(const std::string &line) const {

@@ -41,8 +41,9 @@ class Motor : public Device {
      *        onboard PID speed controller.
      *
      * Converts speed into a -100..100% setpoint (relative to MAX_RAD_PER_SEC) and appends a
-     * "pid" + "set" command to the pending command buffer; call BuildHat::commit() to
-     * actually send it to the Build HAT.
+     * "set" command to the pending command buffer; call BuildHat::commit() to actually send it
+     * to the Build HAT. The "pwmparams" + "pid" configuration is only appended when the gains
+     * differ from the ones currently armed on the port.
      *
      * @param speed target speed in radians per second (positive/negative for direction)
      * @param kp proportional gain of the onboard speed controller
@@ -84,6 +85,12 @@ class Motor : public Device {
 
   private:
     /**
+     * @brief Queue the "pwmparams" + "pid" commands that arm the port's onboard speed
+     *        controller with the currently stored kp_/ki_/kd_ gains.
+     */
+    void queue_pid_config();
+
+    /**
      * @brief Queue the commands that arm the port in combi speed/position/absolute-position
      *        mode and start streaming feedback at selrate() ms.
      */
@@ -117,6 +124,7 @@ class Motor : public Device {
     double kp_;              ///< proportional gain last passed to set_target_radian_per_sec()
     double ki_;              ///< integral gain last passed to set_target_radian_per_sec()
     double kd_;              ///< derivative gain last passed to set_target_radian_per_sec()
+    bool pid_configured_ = false; ///< true once queue_pid_config() armed the port with kp_/ki_/kd_
     std::string serial_serach_str_; ///< "P<port>C0" prefix used by is_feedback() to recognize this motor's lines
 };
 
