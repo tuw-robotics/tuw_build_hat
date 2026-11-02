@@ -6,7 +6,9 @@
   <description>TODO: Package description</description>
   <maintainer email="markus.bader@tuwien.ac.at">Markus Bader</maintainer>
   <maintainer email="matthias.reicher@tuwien.ac.at">Matthias Reicher</maintainer>
-  <license>TODO: License declaration</license>
+  <license file="LICENSE">BSD-3-Clause</license>
+  <author email="markus.bader@tuwien.ac.at">Markus Bader</author>
+  <author email="matthias.reicher@tuwien.ac.at">Matthias Reicher</author>
 
   <depend>ros2_control</depend>
   <depend>gz_ros2_control</depend>
