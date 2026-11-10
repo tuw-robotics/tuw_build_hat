@@ -15,6 +15,8 @@ def generate_launch_description():
     pkg_prefix = 'tuw_build_hat'
     path_description = get_package_share_path(f'{pkg_prefix}_description')
     path_bringup = get_package_share_path(f'{pkg_prefix}_bringup')
+    tmp_folder = os.path.join('/tmp', getpass.getuser())
+    os.makedirs(tmp_folder, exist_ok=True)
     
     robot_controllers = os.path.join(path_bringup, 'config', 'diffdrive_controllers.yaml')
 
@@ -67,7 +69,7 @@ def generate_launch_description():
         robot_description = ParameterValue(sdf_content, value_type=str)
 
         # dump the generated description for debugging
-        with open('/tmp/robot_description.urdf', 'w') as f:
+        with open(os.path.join(tmp_folder, 'robot_description.urdf'), 'w') as f:
             f.write(sdf_content.perform(context))
 
         robot_state_publisher_node = Node(
